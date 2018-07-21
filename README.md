@@ -1,5 +1,5 @@
 <form action="#" method="post">
-  <textarea name="repos" rows="10" cols="100">
+  <textarea name="repos" rows="4" cols="100">
     Enter repository as Username/Repository separated by commas
   </textarea>
   <br>
