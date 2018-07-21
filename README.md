@@ -3,5 +3,5 @@ Application link: https://sharmalakshay.github.io/githubREST/
 <form action="#" method="post">
   <textarea name="repos" rows="4" style="width:100%" placeholder="Enter repositories as Username/Repository separated by commas"></textarea>
   <br>
-  <input type="submit" name="submit" value="Tell me everything!"/>
+  <input type="submit" name="submit" style="width:100%; padding-top:10px; padding-bottom:10px; font-size:120%" value="Tell me everything!"/>
 </form>
