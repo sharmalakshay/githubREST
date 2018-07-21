@@ -2,5 +2,6 @@
   <textarea name="repos" rows="10" cols="100">
     Enter repository as Username/Repository separated by commas
   </textarea>
+  <br>
   <input type="submit" name="submit" value="Tell me everything!"/>
 </form>
