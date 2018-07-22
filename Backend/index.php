@@ -11,6 +11,8 @@ $context = stream_context_create(
 
 $allusers = array();
 
+$totalcommitsbyusers = array();
+
 $repos = explode(',', $_POST['repos']); //all repos in array
 
 echo "<b>Submitted repos are:</b><br>";
@@ -30,11 +32,23 @@ foreach($repos as $repo){
 		}
 		else break;
 	}
-	//echo count($json);
 }
-echo "<br><b>All users who contributed to any of the above in year 2018 are:</b><br>";
-foreach($allusers as $username)echo $username,"<br>";
 
-//print_r($repos);
+echo "<br><b>All users who contributed to any of the above in year 2018 are:</b><br>";
+foreach($allusers as $username){
+	//echo $username,"<br>";
+	$url2 = "https://github.com/search/?q=author%3A$username&type=Commits";
+	$webpage = file_get_contents($url2, false, $context);
+	
+	$halfpage = explode("search?q=author%3A$username&amp;type=Commits",$webpage);
+	$halfhalf = explode("span",$halfpage[1]);
+	$final = explode(">",$halfhalf[1]);
+	$totalcommits = explode("<",$final[1]);
+	//echo $totalcommits[0], "<br><br>";
+	$totalcommitsbyusers["$username"] = $totalcommits[0];
+	
+}
+
+print_r($totalcommitsbyusers);
 
 ?>
