@@ -125,7 +125,7 @@ foreach($repos as $repo_contributions){
 }
 
 ksort($alltheweeks);
-echo"<br><hr><br><b>Weekly commit rate of users for the submitted repos, for 2018</b><br><br>";
+echo"<br><hr><br><b>Weekly commits of users on the submitted repos, for 2018</b><br><br>";
 foreach($alltheweeks as $theweek => $data){
 	echo "Year 2018, Week ", date('W',$theweek), "<br>";
 	arsort($data);
@@ -136,11 +136,31 @@ foreach($alltheweeks as $theweek => $data){
 }
 
 
-$contributionstoall = array();
-$alltheweekstoall = array();
+$newarrayofweeks = array();
 
+foreach($alltheweeks as $weekscalcname => $usersarray){
+	foreach($usersarray as $usernamesforcalc => $userscoreforcalc){
+		if(!isset($newarrayofweeks[$usernamesforcalc]['numofweeks'])) $newarrayofweeks[$usernamesforcalc]['numofweeks'] = 1;
+		else $newarrayofweeks[$usernamesforcalc]['numofweeks'] +=1;
+		
+		if(!isset($newarrayofweeks[$usernamesforcalc]['numofcommits'])) $newarrayofweeks[$usernamesforcalc]['numofcommits'] = $userscoreforcalc;
+		else $newarrayofweeks[$usernamesforcalc]['numofcommits'] += $userscoreforcalc;
+	}
+}
 
+$totalweeklyaverage = array();
 
+foreach($newarrayofweeks as $usernameforcal => $scoreforcal){
+	$totalweeklyaverage[$usernameforcal] = round($scoreforcal['numofcommits']/$scoreforcal['numofweeks']);
+}
+
+arsort($totalweeklyaverage);
+
+echo "<br><b>Weekly commit rate of users for submitted repos</b><br><br>";
+
+foreach($totalweeklyaverage as $weekrateusername => $weekcommits){
+	echo "$weekrateusername has did an average of $weekcommits commits per week<br>";
+}
 
 
 ?>
