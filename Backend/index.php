@@ -1,6 +1,5 @@
 <?php
 
-//because github does not want to give data to scripts, lets fool it ;)
 $context = stream_context_create(
     array(
         "http" => array(
@@ -14,7 +13,7 @@ $allusers = array();
 $totalcommitsbyusers = array();
 $totalcommitsbytargetusers = array();
 
-$repos = explode(',', $_POST['repos']); //all repos in array
+$repos = explode(',', $_POST['repos']);
 
 echo "<b>Submitted repos are:</b><br>";
 
@@ -22,8 +21,6 @@ $json = array();
 
 foreach($repos as $repo){
 	echo explode('/',$repo)[1],"    by    ",explode('/',$repo)[0],"<br>";
-	
-	//$url0 = "https://api.github.com/repos/".trim($repo)."/contributors";
 	
 	$url = "https://api.github.com/repos/".trim($repo)."/commits";
 	$json[$repo] = json_decode(file_get_contents($url, false, $context),true);
@@ -105,9 +102,9 @@ foreach($langcount as $u => $c){
 	echo ")<br>";
 }
 
+
 $contributions = array();
 $alltheweeks = array();
-
 
 foreach($repos as $repo_contributions){
 	$contributions[$repo_contributions] = json_decode(file_get_contents("https://api.github.com/repos/$repo_contributions/stats/contributors", false, $context),true);
@@ -115,19 +112,19 @@ foreach($repos as $repo_contributions){
 		if(in_array($contributor['author']['login'],$allusers)){
 			foreach($contributor['weeks'] as $week){
 				if($week['c']>0 && $week['w']>1514764800){
-					if(isset($alltheweeks[$week['w']][$contributor['author']['login']])){
-						$alltheweeks[$week['w']][$contributor['author']['login']] += $week['c'];
+					if(!isset($alltheweeks[$week['w']][$contributor['author']['login']])){
+						$alltheweeks[$week['w']][$contributor['author']['login']] = $week['c'];
 					}
 					else{
-						$alltheweeks[$week['w']][$contributor['author']['login']] = $week['c'];
+						$alltheweeks[$week['w']][$contributor['author']['login']] += $week['c'];
 					}
 				}
 			}
 		}
 	}
 }
-ksort($alltheweeks);
 
+ksort($alltheweeks);
 echo"<br><hr><br><b>Weekly commit rate of users for the submitted repos, for 2018</b><br><br>";
 foreach($alltheweeks as $theweek => $data){
 	echo "Year 2018, Week ", date('W',$theweek), "<br>";
@@ -137,4 +134,13 @@ foreach($alltheweeks as $theweek => $data){
 	}
 	echo "<br>";
 }
+
+
+$contributionstoall = array();
+$alltheweekstoall = array();
+
+
+
+
+
 ?>
