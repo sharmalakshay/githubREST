@@ -13,7 +13,7 @@ $allusers = array();
 $totalcommitsbyusers = array();
 $totalcommitsbytargetusers = array();
 
-$repos = explode(',', $_POST['repos']);
+$repos = explode(',', $_GET['repos']);
 
 echo "<b>Submitted repos are:</b><br>";
 
@@ -125,9 +125,9 @@ foreach($repos as $repo_contributions){
 }
 
 ksort($alltheweeks);
-echo"<br><hr><br><b>Weekly commits of users on the submitted repos, for 2018</b><br><br>";
+echo"<br><hr><br><b>Weekly ranked commits of users on the submitted repos, for 2018</b><br><br>";
 foreach($alltheweeks as $theweek => $data){
-	echo "Year 2018, Week ", date('W',$theweek), "<br>";
+	echo "Week ", date('W',$theweek), ":<br>";
 	arsort($data);
 	foreach($data as $userr => $contri_score){
 		echo "$userr commited $contri_score times<br>";
@@ -159,8 +159,18 @@ arsort($totalweeklyaverage);
 echo "<br><b>Weekly commit rate of users for submitted repos</b><br><br>";
 
 foreach($totalweeklyaverage as $weekrateusername => $weekcommits){
-	echo "$weekrateusername has did an average of $weekcommits commits per week<br>";
+	echo "$weekrateusername has an average of $weekcommits commits per week<br>";
 }
+
+
+
+foreach($alluser as $singleuser){
+	for($i = 1; i<=3; i++){
+		$urltoevents = "https://api.github.com/users/$singleuser/events?page=$i";
+		
+	}
+}
+
 
 
 ?>
