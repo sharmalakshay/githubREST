@@ -7,16 +7,17 @@ $context = stream_context_create(
         )
     )
 );
-
+$mailbody ="";
 
 $allusers = array();
 
 $totalcommitsbyusers = array();
 $totalcommitsbytargetusers = array();
 
-$repos = explode(',', $_GET['repos']);
+$repos = explode(',', $_POST['repos']);
 
 echo "<b>Submitted repos are:</b><br>";
+$mailbody .= "<b>Submitted repos are:</b><br>"
 
 $json = array();
 
@@ -36,8 +37,10 @@ foreach($repos as $repo){
 }
 
 echo "<br><hr><br><b>All users who contributed to any of the above in year 2018 are:</b><br><br>";
+$mailbody .= "<br><hr><br><b>All users who contributed to any of the above in year 2018 are:</b><br><br>";
 foreach($allusers as $username){
 	echo $username,"<br>";
+	$mailbody .= $username."<br>";
 	/*$webpage = file_get_contents("https://github.com/search/?q=author%3A$username&type=Commits", false, $context);
 	
 	$halfpage = explode("search?q=author%3A$username&amp;type=Commits",$webpage);
@@ -68,9 +71,11 @@ foreach($allusers as $username){
 }
 
 echo "<br><hr><br><b>Most active to least active on Github among the above users:</b><br><br>";
+$mailbody .= "<br><hr><br><b>Most active to least active on Github among the above users:</b><br><br>";
 arsort($totalcommitsbyusers);
 foreach($totalcommitsbyusers as $key => $value){
 	echo "$key having $value commits<br>";
+	$mailbody .= "$key having $value commits<br>";
 }
 
 foreach($allusers as $theuser){
@@ -88,9 +93,11 @@ foreach($repos as $rep){
 }
 
 echo "<br><hr><br><b>Most to least active in submitted repos</b> (Only verified commits)<b>:</b><br><br>";
+$mailbody .= "<br><hr><br><b>Most to least active in submitted repos</b> (Only verified commits)<b>:</b><br><br>";
 arsort($totalcommitsbytargetusers);
 foreach($totalcommitsbytargetusers as $target => $score){
 	echo "$target having $score commits<br>";
+	$mailbody .= "$target having $score commits<br>";
 }
 
 $reposbyusers = array();
@@ -114,12 +121,16 @@ foreach($reposbyusers as $usser => $reppos){
 
 arsort($langcount);
 echo "<br><hr><br><b>Ranking based on languages known:</b><br><br>";
+$mailbody .= "<br><hr><br><b>Ranking based on languages known:</b><br><br>";
 foreach($langcount as $u => $c){
 	echo "$u = $c (";
+	$mailbody .= "$u = $c (";
 	foreach($langsknown[$u] as $l){
 		echo "$l; ";
+		$mailbody .= "$l; ";
 	}
 	echo ")<br>";
+	$mailbody .= ")<br>";
 }
 
 
@@ -145,14 +156,18 @@ foreach($repos as $repo_contributions){
 }
 
 ksort($alltheweeks);
-echo"<br><hr><br><b>Weekly ranked commits of users on the submitted repos, for 2018</b><br><br>";
+echo "<br><hr><br><b>Weekly ranked commits of users on the submitted repos, for 2018</b><br><br>";
+$mailbody .= "<br><hr><br><b>Weekly ranked commits of users on the submitted repos, for 2018</b><br><br>";
 foreach($alltheweeks as $theweek => $data){
 	echo "Week ", date('W',$theweek), ":<br>";
+	$mailbody .= "Week ".date('W',$theweek).":<br>";
 	arsort($data);
 	foreach($data as $userr => $contri_score){
 		echo "$userr commited $contri_score times<br>";
+		$mailbody .= "$userr commited $contri_score times<br>";
 	}
 	echo "<br>";
+	$mailbody .= "<br>";
 }
 
 
@@ -177,9 +192,11 @@ foreach($newarrayofweeks as $usernameforcal => $scoreforcal){
 arsort($totalweeklyaverage);
 
 echo "<br><b>Weekly commit rate of users for submitted repos</b><br><br>";
+$mailbody .= "<br><b>Weekly commit rate of users for submitted repos</b><br><br>";
 
 foreach($totalweeklyaverage as $weekrateusername => $weekcommits){
 	echo "$weekrateusername has an average of $weekcommits commits per week<br>";
+	$mailbody .= "$weekrateusername has an average of $weekcommits commits per week<br>";
 }
 
 
@@ -200,9 +217,11 @@ foreach($allusers as $username2){
 }
 
 echo "<br><hr><br><b>Average commit rate of each user to any project, for 2018:</b><br><br>";
+$mailbody .= "<br><hr><br><b>Average commit rate of each user to any project, for 2018:</b><br><br>";
 arsort($totalcommitsbyusersbeafter2018);
 foreach($totalcommitsbyusersbeafter2018 as $key22 => $value22){
 	echo "$key22 having $value22 commits<br>";
+	$mailbody .= "$key22 having $value22 commits<br>";
 }
 
 
@@ -235,6 +254,14 @@ foreach($allreposfromallusers as $onerepo){
 
 $totalnumberofcontributors = count($allcontributors);
 echo "<br><hr><br><b>Total number of contributors who have contributed to any project our user has, in 2018:</b><br><br>";
+$mailbody .= "<br><hr><br><b>Total number of contributors who have contributed to any project our user has, in 2018:</b><br><br>";
 echo "<span style='font-size:200%'> $totalnumberofcontributors </span>";
+$mailbody .= "<span style='font-size:200%'> $totalnumberofcontributors </span>";
 curl_close($ch3);
+
+if(isset($_POST['email'])){
+	$to = $_POST['email'];
+	$headers = "From: oh-please-do-not-reply@iamlakshay.com";
+	mail($to,"IamLakshay: Your Github report",$mailbody,$headers);
+}
 ?>
