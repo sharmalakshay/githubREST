@@ -1,6 +1,6 @@
 Application link: https://sharmalakshay.github.io/githubREST/
 
-<form action="http://iamlakshay.com/githubREST/" method="post">
+<form action="http://iamlakshay.com/githubREST/" method="get">
   <textarea name="repos" rows="4" style="width:100%" placeholder="Enter repositories as Username/Repository separated by commas"></textarea>
   <br>
   <input type="text" name="email" style="width:100%" placeholder="Enter email address so we can send you the results (optional)"/>
