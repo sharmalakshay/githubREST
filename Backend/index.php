@@ -14,7 +14,7 @@ $allusers = array();
 $totalcommitsbyusers = array();
 $totalcommitsbytargetusers = array();
 
-$repos = explode(',', $_POST['repos']);
+$repos = explode(',', $_GET['repos']);
 
 echo "<b>Submitted repos are:</b><br>";
 $mailbody .= "<b>Submitted repos are:</b><br>"
@@ -262,6 +262,6 @@ curl_close($ch3);
 if(isset($_POST['email'])){
 	$to = $_POST['email'];
 	$headers = "From: oh-please-do-not-reply@iamlakshay.com";
-	mail($to,"IamLakshay: Your Github report",$mailbody,$headers);
+	if(mail($to,"IamLakshay: Your Github report",$mailbody,$headers))echo "<br><hr><b>REPORT EMAIL SENT</b>";
 }
 ?>
