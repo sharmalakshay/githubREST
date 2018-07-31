@@ -208,9 +208,33 @@ foreach($totalcommitsbyusersbeafter2018 as $key22 => $value22){
 
 $queryforallrepos = "";
 foreach ($allusers as $usertostring){
-	$allusersinstring .= "user:"$usertostring."+";
+	$queryforallrepos .= "user:".$usertostring."+";	
 }
-$queryforallrepos .= "committer-date:>2018-01-01";
+$queryforallrepos .= "pushed:>2018-01-01";
 
+$ch3 = curl_init();
+curl_setopt($ch3, CURLOPT_URL, "https://api.github.com/search/repositories?q=$queryforallrepos");
+$curlheaders3 = [
+	'Accept: application/vnd.github.cloak-preview+json',
+	'User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+];
+curl_setopt($ch3, CURLOPT_HTTPHEADER, $curlheaders3);
+curl_setopt($ch3, CURLOPT_RETURNTRANSFER, 1); //return transfer as a string = YES
+$outputfromcurl3 = json_decode(curl_exec($ch3),true);
+$allreposfromallusers = array();
+foreach($outputfromcurl3['items'] as $repofromusers){
+	if(!in_array($repofromusers['full_name'],$allreposfromallusers))array_push($allreposfromallusers,$repofromusers['full_name']);
+}
+$allcontributors = array();
+foreach($allreposfromallusers as $onerepo){
+	$contributorsinrepo = json_decode(file_get_contents("https://api.github.com/repos/$onerepo/contributors", false, $context), true);
+	foreach($contributorsinrepo as $eachcontributor){
+		if(!in_array($eachcontributor['login'],$allcontributors))array_push($allcontributors,$eachcontributor['login']);
+	}
+}
 
+$totalnumberofcontributors = count($allcontributors);
+echo "<br><hr><br><b>Total number of contributors who have contributed to any project our user has, in 2018:</b><br><br>";
+echo "<span style='font-size:200%'> $totalnumberofcontributors </span>";
+curl_close($ch3);
 ?>
