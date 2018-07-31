@@ -8,6 +8,7 @@ $context = stream_context_create(
     )
 );
 
+
 $allusers = array();
 
 $totalcommitsbyusers = array();
@@ -37,7 +38,7 @@ foreach($repos as $repo){
 echo "<br><hr><br><b>All users who contributed to any of the above in year 2018 are:</b><br><br>";
 foreach($allusers as $username){
 	echo $username,"<br>";
-	$webpage = file_get_contents("https://github.com/search/?q=author%3A$username&type=Commits", false, $context);
+	/*$webpage = file_get_contents("https://github.com/search/?q=author%3A$username&type=Commits", false, $context);
 	
 	$halfpage = explode("search?q=author%3A$username&amp;type=Commits",$webpage);
 	$halfhalf = explode("span",$halfpage[1]);
@@ -45,6 +46,25 @@ foreach($allusers as $username){
 	$totalcommits = explode("<",$final[1]);
 	//echo $totalcommits[0], "<br><br>";
 	$totalcommitsbyusers[$username] = str_replace("K","000",$totalcommits[0]);
+	*/
+	//^^^^^^^^^^FOUND A BETTER METHOD ^^^^^^^^^^^^^^^^^^
+	
+	/*
+	$jsonfortotalcommits = json_decode(file_get_contents("https://api.github.com/search/commits?q=author:$username", false, $context));
+	$totalcommitsofuser[$username] = $jsonfortotalcommits['total_count'];
+	*/
+	//^^^^^^^^^^^^^^DID NOT WORK QUITE RIGHT^^^^^^^^^^^^^^
+	$ch = curl_init(); //basically making a cURL object with all the options to hit the server
+	curl_setopt($ch, CURLOPT_URL, "https://api.github.com/search/commits?q=author:$username");
+	$curlheaders = [
+		'Accept: application/vnd.github.cloak-preview+json',
+		'User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+	];
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $curlheaders);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //return transfer as a string = YES
+	$outputfromcurl = json_decode(curl_exec($ch),true);
+	$totalcommitsbyusers[$username] = $outputfromcurl['total_count'];
+	curl_close($ch);
 }
 
 echo "<br><hr><br><b>Most active to least active on Github among the above users:</b><br><br>";
@@ -163,14 +183,34 @@ foreach($totalweeklyaverage as $weekrateusername => $weekcommits){
 }
 
 
+$totalcommitsbyusersbeafter2018 = array();
 
-foreach($alluser as $singleuser){
-	for($i = 1; i<=3; i++){
-		$urltoevents = "https://api.github.com/users/$singleuser/events?page=$i";
-		
-	}
+foreach($allusers as $username2){
+	$ch2 = curl_init(); //basically making a cURL object with all the options to hit the server
+	curl_setopt($ch2, CURLOPT_URL, "https://api.github.com/search/commits?q=author:$username2+committer-date:>2018-01-01");
+	$curlheaders2 = [
+		'Accept: application/vnd.github.cloak-preview+json',
+		'User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+	];
+	curl_setopt($ch2, CURLOPT_HTTPHEADER, $curlheaders2);
+	curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1); //return transfer as a string = YES
+	$outputfromcurl2 = json_decode(curl_exec($ch2),true);
+	$totalcommitsbyusersbeafter2018[$username2] = $outputfromcurl2['total_count'];
+	curl_close($ch2);
 }
 
+echo "<br><hr><br><b>Average commit rate of each user to any project, for 2018:</b><br><br>";
+arsort($totalcommitsbyusersbeafter2018);
+foreach($totalcommitsbyusersbeafter2018 as $key22 => $value22){
+	echo "$key22 having $value22 commits<br>";
+}
+
+
+$queryforallrepos = "";
+foreach ($allusers as $usertostring){
+	$allusersinstring .= "user:"$usertostring."+";
+}
+$queryforallrepos .= "committer-date:>2018-01-01";
 
 
 ?>
