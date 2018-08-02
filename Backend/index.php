@@ -279,6 +279,8 @@ $mailbody .= "<br><hr><br><b>Total number of contributors who have contributed t
 echo $totalnumberofcontributors;
 $mailbody .= $totalnumberofcontributors;
 curl_close($ch3);
+echo "<br><hr><br>";
+$mailbody .= "<br><hr><br>";
 
 echo "
 <form action='https://scss.tcd.ie/~lsharma/maildo.php' method='post'>
