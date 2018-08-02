@@ -43,7 +43,7 @@ $json = array();
 
 foreach($repos as $repo){
 	echo explode('/',$repo)[1],"    by    ",explode('/',$repo)[0],"<br>";
-	$mailbody .= explode('/',$repo)[1],"    by    ",explode('/',$repo)[0],"<br>";
+	$mailbody .= explode('/',$repo)[1]."    by    ".explode('/',$repo)[0]."<br>";
 	
 	$url = "https://api.github.com/repos/".trim($repo)."/commits";
 	$json[$repo] = json_decode(file_get_contents($url, false, $context),true);
