@@ -34,7 +34,7 @@ $allusers = array();
 $totalcommitsbyusers = array();
 $totalcommitsbytargetusers = array();
 
-$repos = explode(',', $_POST['repos']);
+$repos = explode(',', $_GET['repos']);
 
 echo "<b>Submitted repos are:</b><br>";
 $mailbody .= "<b>Submitted repos are:</b><br>";
