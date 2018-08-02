@@ -1,3 +1,21 @@
+<style>
+body{
+	background-image: url('bkg.png');
+	background-color: #151515;
+	color: #eaeaea;
+}
+b{
+	color: #b5e853;
+}
+#mailbtn{
+	padding: 4px;
+	width: 40%;
+	background-color: #afa638;
+	color: black;
+}
+
+</style>
+
 <?php
 
 $context = stream_context_create(
@@ -7,17 +25,19 @@ $context = stream_context_create(
         )
     )
 );
-$mailbody ="";
+
+$mailbody = "";
+
 
 $allusers = array();
 
 $totalcommitsbyusers = array();
 $totalcommitsbytargetusers = array();
 
-$repos = explode(',', $_GET['repos']);
+$repos = explode(',', $_POST['repos']);
 
 echo "<b>Submitted repos are:</b><br>";
-$mailbody .= "<b>Submitted repos are:</b><br>"
+$mailbody .= "<b>Submitted repos are:</b><br>";
 
 $json = array();
 
@@ -138,7 +158,7 @@ $contributions = array();
 $alltheweeks = array();
 
 foreach($repos as $repo_contributions){
-	$contributions[$repo_contributions] = json_decode(file_get_contents("https://api.github.com/repos/$repo_contributions/stats/contributors", false, $context),true);
+	$contributions[$repo_contributions] = json_decode(file_get_contents("https://api.github.com/repos/".trim($repo_contributions)."/stats/contributors", false, $context),true);
 	foreach($contributions[$repo_contributions] as $contributor){
 		if(in_array($contributor['author']['login'],$allusers)){
 			foreach($contributor['weeks'] as $week){
@@ -255,13 +275,14 @@ foreach($allreposfromallusers as $onerepo){
 $totalnumberofcontributors = count($allcontributors);
 echo "<br><hr><br><b>Total number of contributors who have contributed to any project our user has, in 2018:</b><br><br>";
 $mailbody .= "<br><hr><br><b>Total number of contributors who have contributed to any project our user has, in 2018:</b><br><br>";
-echo "<span style='font-size:200%'> $totalnumberofcontributors </span>";
-$mailbody .= "<span style='font-size:200%'> $totalnumberofcontributors </span>";
+echo $totalnumberofcontributors;
+$mailbody .= $totalnumberofcontributors;
 curl_close($ch3);
 
-if(isset($_POST['email'])){
-	$to = $_POST['email'];
-	$headers = "From: oh-please-do-not-reply@iamlakshay.com";
-	if(mail($to,"IamLakshay: Your Github report",$mailbody,$headers))echo "<br><hr><b>REPORT EMAIL SENT</b>";
-}
+echo "
+<form action='https://scss.tcd.ie/~lsharma/maildo.php' method='post'>
+Send you a copy of this report? <input type='text' name='to' placeholder='Put your mail here'/>
+<input type='hidden' name='body' value='$mailbody'/>
+<br><br><input id='mailbtn' type='submit' value='Send'/></form>
+";
 ?>
