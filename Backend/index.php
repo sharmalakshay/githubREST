@@ -289,3 +289,10 @@ Send you a copy of this report? <input type='text' name='to' placeholder='Put yo
 <br><br><input id='mailbtn' type='submit' value='Send'/></form>
 ";
 ?>
+<script>
+var s = document.documentElement.innerText;
+var ans = s.search("HTTP/1.1 403 Forbidden");
+if(ans > 0){
+	document.documentElement.innerHTML = "<h2>Sorry the application has exceeded the limit of API request, please refresh or open the application after 1 hour.</h2><h1>THANKS!</h1>";
+}
+</script>
